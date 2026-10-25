@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cloud Event Management & Ticketing System - Super Simple Complete Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    @page {
+      margin: 12mm 14mm 12mm 14mm;
+      size: A4 portrait;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.5;
+      font-size: 10pt;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .no-break {
+      page-break-inside: avoid;
+    }
+
+    /* Cover / Header Section */
+    .header-box {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);
+      color: #ffffff;
+      padding: 24px 28px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+
+    .badge-header {
+      display: inline-block;
+      background: rgba(99, 102, 241, 0.25);
+      border: 1px solid rgba(165, 180, 252, 0.4);
+      color: #c7d2fe;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+
+    .header-box h1 {
+      color: #ffffff;
+      font-size: 20pt;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .header-box p {
+      color: #cbd5e1;
+      font-size: 10pt;
+    }
+
+    .meta-bar {
+      display: flex;
+      gap: 20px;
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 8pt;
+      color: #94a3b8;
+    }
+
+    .meta-bar strong {
+      color: #ffffff;
+    }
+
+    /* Card styling */
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11pt;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .analogy-card {
+      background: #fefce8;
+      border: 1px solid #fef08a;
+      border-left: 5px solid #eab308;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 8px 0 12px 0;
+      font-size: 9pt;
+      page-break-inside: avoid;
+    }
+
+    .analogy-card strong {
+      color: #854d0e;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 16px 0;
+      font-size: 8.5pt;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      text-align: left;
+      font-weight: 700;
+      padding: 7px 10px;
+      border-bottom: 2px solid #cbd5e1;
+    }
+
+    td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .code-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 7pt;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-green {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+    }
+
+    .badge-blue {
+      background: #e0e7ff;
+      color: #3730a3;
+      border: 1px solid #a5b4fc;
+    }
+
+    .badge-purple {
+      background: #f3e8ff;
+      color: #6b21a8;
+      border: 1px solid #d8b4fe;
+    }
+
+    /* Diagram visual block */
+    .diagram-box {
+      background: #0f172a;
+      color: #38bdf8;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7pt;
+      line-height: 1.35;
+      margin: 10px 0 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .diagram-box span.green { color: #4ade80; }
+    .diagram-box span.yellow { color: #fde047; }
+    .diagram-box span.pink { color: #f472b6; }
+    .diagram-box span.purple { color: #c084fc; }
+
+    /* Section numbering header */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0 8px 0;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 4px;
+    }
+
+    .section-num {
+      background: #4f46e5;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 9pt;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0;
+    }
+
+    li {
+      margin-bottom: 2px;
+      font-size: 8.8pt;
+    }
+
+    .tip-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 8.5pt;
+      margin: 8px 0;
+      page-break-inside: avoid;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= PAGE 1 ================= -->
+  <div class="header-box">
+    <div class="badge-header">University Cloud Computing Laboratory • AWS Architecture Report</div>
+    <h1>Cloud-Based Event Management & Ticketing System</h1>
+    <p>A Complete, Simple Explanation of Everything We Built — From Concept & Fun Analogies to Live AWS Cloud Deployment.</p>
+    <div class="meta-bar">
+      <div><strong>AWS Account ID:</strong> 838775536247</div>
+      <div><strong>Region:</strong> Asia Pacific (Mumbai) ap-south-1</div>
+      <div><strong>Total Cloud Spend:</strong> $0.00 (Free Tier Capped)</div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">The Big Picture: What Did We Build?</div>
+  </div>
+
+  <p style="font-size: 9.5pt; margin-bottom: 8px;">
+    We built an entire university event management platform that lets students browse events, register, book tickets, and receive confirmation passes — backed by a rock-solid, multi-tier cloud infrastructure on Amazon Web Services (AWS).
+  </p>
+
+  <div class="analogy-card">
+    <strong>👶 The "Amusement Park" Analogy (Explain Like I'm 5):</strong>
+    <ul>
+      <li><strong>Custom VPC:</strong> A sturdy, fenced perimeter around our amusement park so outsiders cannot wander in.</li>
+      <li><strong>EC2 Virtual Server (Node.js API):</strong> The friendly ticket counter at the front gate where visitors submit requests.</li>
+      <li><strong>Amazon RDS (MySQL):</strong> The fireproof vault locked in the back office where all ticket counts and guest names live.</li>
+      <li><strong>Amazon SQS:</strong> The orderly conveyor belt where ticket orders wait in line during huge rush hours without crashing.</li>
+      <li><strong>AWS Lambda:</strong> The speedy robot worker that wakes up for 0.05 seconds, stamps each ticket, and goes back to sleep (saving all money!).</li>
+      <li><strong>Amazon SNS:</strong> The homing pigeon that instantly delivers the confirmed ticket directly to the student's email inbox.</li>
+    </ul>
+  </div>
+
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">Visual Architecture Diagram</div>
+  </div>
+
+  <div class="diagram-box">
+<span class="yellow">============================== AWS REGION: ap-south-1 (Mumbai) ==============================</span>
+             [Student / Browser] ──── (Port 3000) ────┐
+                                                      │
+                                                      ▼
+  <span class="green">┌────────────────────────────── CUSTOM VPC (10.0.0.0/16) ──────────────────────────────┐</span>
+  <span class="green">│</span>  <span class="pink">[Internet Gateway: igw-0ed403d9dc739c53f]</span> ── (Traffic Bridge)                         <span class="green">│</span>
+  <span class="green">│</span>                                                                                      <span class="green">│</span>
+  <span class="green">│</span>  <span class="purple">▶ PUBLIC SUBNET (10.0.1.0/24 - Zone a)</span>                                                <span class="green">│</span>
+  <span class="green">│</span>  ┌────────────────────────────────────────────────────────────────────────────────┐  <span class="green">│</span>
+  <span class="green">│</span>  │  <span class="yellow">Amazon EC2 Server (i-01930664a0074263e) • Public IP: 3.109.144.78</span>              │  <span class="green">│</span>
+  <span class="green">│</span>  │  - Runs Express API (:3000) • SG: allow-web (Ports 22, 80, 3000)                │  <span class="green">│</span>
+  <span class="green">│</span>  └──────────────────────────────────────┬─────────────────────────────────────────┘  <span class="green">│</span>
+  <span class="green">│</span>                                         │ (Private MySQL Traffic - Port 3306)        <span class="green">│</span>
+  <span class="green">│</span>  <span class="purple">▶ PRIVATE SUBNETS (10.0.2.0/24 & 10.0.3.0/24 - Zones b & c)</span>                               <span class="green">│</span>
+  <span class="green">│</span>  ┌──────────────────────────────────────▼─────────────────────────────────────────┐  <span class="green">│</span>
+  <span class="green">│</span>  │  <span class="yellow">Amazon RDS MySQL Database (event-mgmt-db)</span>                                     │  <span class="green">│</span>
+  <span class="green">│</span>  │  - Endpoint: event-mgmt-db.cn0q6aswosq7.ap-south-1.rds.amazonaws.com          │  <span class="green">│</span>
+  <span class="green">│</span>  │  - Completely Hidden from the Internet • SG: allow-rds                         │  <span class="green">│</span>
+  <span class="green">│</span>  └────────────────────────────────────────────────────────────────────────────────┘  <span class="green">│</span>
+  <span class="green">└─────────────────────────────────────────┬────────────────────────────────────────────┘</span>
+                                            │
+                                            ▼ (Async Booking Flow)
+  <span class="pink">┌─────────────────────────── ASYNCHRONOUS SERVERLESS TIER ─────────────────────────────┐</span>
+  <span class="pink">│</span>  [Amazon SQS Queue] ───────► [AWS Lambda Worker] ───────► [Amazon SNS Topic]          <span class="pink">│</span>
+  <span class="pink">│</span>  (event-registration-queue)  (ticket-worker)              (event-ticket-topic)        <span class="pink">│</span>
+  <span class="pink">│</span>  Durable message buffer      Serverless compute           Attendee confirmation email │</span>
+  <span class="pink">└───────────────────────────────────────────────────────────────────────────────────────┘</span>
+  </div>
+
+  <!-- ================= PAGE 2 ================= -->
+  <div class="page-break"></div>
+
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">The 3-Person Team Breakdown (Rubric Alignment)</div>
+  </div>
+
+  <p style="font-size: 9.5pt; margin-bottom: 10px;">
+    The architecture fulfills every university rubric requirement by dividing responsibilities cleanly into 3 specialized roles:
+  </p>
+
+  <!-- Person A -->
+  <div class="card" style="border-left: 5px solid #6366f1;">
+    <div class="card-title" style="color: #4338ca;">
+      <span>🛡️ Person A — Cloud Network & Security Lead</span>
+      <span class="badge-status badge-blue">Foundation & Security</span>
+    </div>
+    <ul>
+      <li><strong>Custom VPC (<span class="code-pill">10.0.0.0/16</span>):</strong> Created an isolated, private virtual network on AWS.</li>
+      <li><strong>Public & Private Subnets:</strong> Placed EC2 in the public front yard and RDS in the private vault.</li>
+      <li><strong>Internet Gateway (IGW):</strong> Connected the public subnet to the internet without paying for an expensive NAT Gateway (saving ~$32/month).</li>
+      <li><strong>Security Groups:</strong> Configured <span class="code-pill">allow-web</span> for ports 22/80/3000, and <span class="code-pill">allow-rds</span> strictly locking port 3306 to EC2.</li>
+      <li><strong>IAM Roles:</strong> Provisioned <span class="code-pill">EventMgmtEC2Role</span> and <span class="code-pill">EventMgmtLambdaRole</span> for keyless AWS SDK access.</li>
+      <li><strong>AWS Budgets:</strong> Locked in a strict <strong>$2.00 spending cap</strong> with 50% & 80% email notifications.</li>
+    </ul>
+  </div>
+
+  <!-- Person B -->
+  <div class="card" style="border-left: 5px solid #059669;">
+    <div class="card-title" style="color: #047857;">
+      <span>⚙️ Person B — Core Backend & Database Admin</span>
+      <span class="badge-status badge-green">Backend & Database</span>
+    </div>
+    <ul>
+      <li><strong>Amazon RDS (MySQL):</strong> Provisioned <span class="code-pill">event-mgmt-db</span> (<span class="code-pill">db.t3.micro</span> Free Tier) with 0-day backup retention to eliminate snapshot storage costs.</li>
+      <li><strong>Database Schema (<span class="code-pill">schema.sql</span>):</strong> Engineered structured relational tables for users, events, and tickets.</li>
+      <li><strong>SSM Parameter Store:</strong> Stored DB host, username, and encrypted password at <span class="code-pill">/event-mgmt/db/*</span>.</li>
+      <li><strong>Amazon S3 (Flyer Storage):</strong> Created bucket <span class="code-pill">event-mgmt-flyers-838775536247</span> with CORS enabled for flyer uploads.</li>
+      <li><strong>Amazon SQS Queue:</strong> Created <span class="code-pill">event-registration-queue</span> for asynchronous decoupling.</li>
+      <li><strong>Amazon EC2 Server:</strong> Launched Linux <span class="code-pill">t3.micro</span> instance at <span class="code-pill">3.109.144.78:3000</span> running Express via PM2.</li>
+    </ul>
+  </div>
+
+  <!-- Person C -->
+  <div class="card" style="border-left: 5px solid #d946ef;">
+    <div class="card-title" style="color: #a21caf;">
+      <span>💻 Person C — Frontend & Serverless Workflow Lead</span>
+      <span class="badge-status badge-purple">React & Serverless</span>
+    </div>
+    <ul>
+      <li><strong>AWS Lambda Worker (<span class="code-pill">worker.py</span>):</strong> Built Python 3.12 worker triggered by SQS in batches of 5 to process ticket passes.</li>
+      <li><strong>Amazon SNS Topic (<span class="code-pill">event-ticket-topic</span>):</strong> Fans out ticket confirmations to attendees and team notifications.</li>
+      <li><strong>React 18 Frontend:</strong> Created an interactive dark glassmorphic web app with 5 pages: Home, Browse Events, Ticket Reservation, My Tickets, and Organizer Dashboard.</li>
+      <li><strong>CloudWatch Monitoring:</strong> Deployed <span class="code-pill">EventMgmtDashboard</span> and an automated high-CPU metric alarm.</li>
+    </ul>
+  </div>
+
+  <!-- ================= PAGE 3 ================= -->
+  <div class="page-break"></div>
+
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Directory of Every Provisioned AWS Resource</div>
+  </div>
+
+  <p style="font-size: 9.5pt; margin-bottom: 8px;">
+    Official inventory of all active cloud assets in your AWS Account (<strong>838775536247</strong>) in <strong>Mumbai (<span class="code-pill">ap-south-1</span>)</strong>:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Resource Name</th>
+        <th>Resource ID / Endpoint</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Amazon EC2</strong></td>
+        <td><span class="code-pill">event-api-server</span></td>
+        <td>Instance: <span class="code-pill">i-0dc720512fdcbd100</span> | IP: <strong>13.206.223.86:3000</strong></td>
+        <td><span class="badge-status badge-green">RUNNING</span></td>
+      </tr>
+      <tr>
+        <td><strong>Amazon RDS</strong></td>
+        <td><span class="code-pill">event-mgmt-db</span></td>
+        <td><span class="code-pill">event-mgmt-db.cn0q6aswosq7.ap-south-1.rds.amazonaws.com</span></td>
+        <td><span class="badge-status badge-green">AVAILABLE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Custom VPC</strong></td>
+        <td><span class="code-pill">event-mgmt-vpc</span></td>
+        <td><span class="code-pill">vpc-09e1559f2f6768e61</span> (10.0.0.0/16)</td>
+        <td><span class="badge-status badge-blue">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Public Subnet</strong></td>
+        <td><span class="code-pill">public-subnet</span></td>
+        <td><span class="code-pill">subnet-0896d52a7247a9b05</span> (ap-south-1a)</td>
+        <td><span class="badge-status badge-blue">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Private Subnets</strong></td>
+        <td><span class="code-pill">private-subnet-1 & 2</span></td>
+        <td><span class="code-pill">subnet-005f63b6f5b62eb0d</span> & <span class="code-pill">subnet-0971db1c954550476</span></td>
+        <td><span class="badge-status badge-blue">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Internet Gateway</strong></td>
+        <td><span class="code-pill">event-igw</span></td>
+        <td><span class="code-pill">igw-0ed403d9dc739c53f</span></td>
+        <td><span class="badge-status badge-blue">ATTACHED</span></td>
+      </tr>
+      <tr>
+        <td><strong>Security Groups</strong></td>
+        <td><span class="code-pill">allow-web</span> / <span class="code-pill">allow-rds</span></td>
+        <td>Web SG: <span class="code-pill">sg-0566811aa74b3341e</span> | RDS SG: <span class="code-pill">sg-0df8944f378bdd435</span></td>
+        <td><span class="badge-status badge-blue">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Amazon SQS</strong></td>
+        <td><span class="code-pill">event-registration-queue</span></td>
+        <td><span class="code-pill">https://sqs.ap-south-1.amazonaws.com/838775536247/event-registration-queue</span></td>
+        <td><span class="badge-status badge-green">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>AWS Lambda</strong></td>
+        <td><span class="code-pill">ticket-worker</span></td>
+        <td>Python 3.12 (SQS Event Source Mapping attached)</td>
+        <td><span class="badge-status badge-green">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Amazon SNS</strong></td>
+        <td><span class="code-pill">event-ticket-topic</span></td>
+        <td><span class="code-pill">arn:aws:sns:ap-south-1:838775536247:event-ticket-topic</span></td>
+        <td><span class="badge-status badge-green">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>Amazon S3</strong></td>
+        <td><span class="code-pill">event-mgmt-flyers-838775536247</span></td>
+        <td>Bucket for event flyers with CORS and backend zip storage</td>
+        <td><span class="badge-status badge-green">ACTIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>SSM Store</strong></td>
+        <td><span class="code-pill">/event-mgmt/db/*</span></td>
+        <td>Encrypted database credentials parameter storage</td>
+        <td><span class="badge-status badge-blue">STORED</span></td>
+      </tr>
+      <tr>
+        <td><strong>CloudWatch</strong></td>
+        <td><span class="code-pill">EventMgmtDashboard</span></td>
+        <td>Monitors EC2 CPU, RDS connections, and SQS/Lambda traffic</td>
+        <td><span class="badge-status badge-blue">LIVE</span></td>
+      </tr>
+      <tr>
+        <td><strong>AWS Budgets</strong></td>
+        <td><span class="code-pill">Zero-Cost-University-Cap</span></td>
+        <td>Hard $2.00 spending cap with 50% and 80% email alerts</td>
+        <td><span class="badge-status badge-green">ENABLED</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">Credit Safety & Free Tier Rules</div>
+  </div>
+
+  <div class="tip-box">
+    <strong>💡 1-Click Teardown (Run When Finished Presenting):</strong><br>
+    In PowerShell, run: <span class="code-pill">cd "d:\CCL Project\infrastructure"; .\cleanup.ps1 -Region "ap-south-1"</span><br>
+    This terminates the EC2 instance and deletes the RDS database (skipping storage snapshots) so you never get billed when you're not using it!
+  </div>
+
+  <div class="tip-box" style="background: #fdf2f8; border-left-color: #ec4899;">
+    <strong>🔍 Why didn't you see instances in the AWS Console at first?</strong><br>
+    The AWS web console defaults to <em>N. Virginia (us-east-1)</em>. Your resources are deployed in <strong>Asia Pacific (Mumbai) / ap-south-1</strong>. Switching the region dropdown in the top-right corner immediately displays all your servers and databases!
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+# AWS Lambda Python 3.12 Runtime includes boto3 pre-installed.
+# For local unit testing or offline debugging, install:
+boto3>=1.34.0
+pytest>=8.0.0

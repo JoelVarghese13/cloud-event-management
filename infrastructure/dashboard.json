@@ -1,0 +1,70 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/EC2", "CPUUtilization", { "stat": "Average", "period": 300 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-south-1",
+        "title": "EC2 CPU Utilization (%)"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "event-mgmt-db", { "stat": "Average", "period": 300 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-south-1",
+        "title": "RDS Database Connections"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/Lambda", "Invocations", "FunctionName", "ticket-worker", { "stat": "Sum", "period": 60 } ],
+          [ ".", "Errors", ".", ".", { "stat": "Sum", "period": 60, "color": "#d62728" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-south-1",
+        "title": "Lambda Invocations & Errors"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "event-registration-queue", { "stat": "Average", "period": 60 } ],
+          [ ".", "NumberOfMessagesReceived", ".", ".", { "stat": "Sum", "period": 60 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-south-1",
+        "title": "SQS Queue Depth & Activity"
+      }
+    }
+  ]
+}

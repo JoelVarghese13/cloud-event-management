@@ -1,0 +1,32 @@
+[
+  {
+    "Notification": {
+      "NotificationType": "ACTUAL",
+      "ComparisonOperator": "GREATER_THAN",
+      "Threshold": 50.0,
+      "ThresholdType": "PERCENTAGE",
+      "NotificationState": "ALARM"
+    },
+    "Subscribers": [
+      {
+        "SubscriptionType": "EMAIL",
+        "Address": "team@university.edu"
+      }
+    ]
+  },
+  {
+    "Notification": {
+      "NotificationType": "ACTUAL",
+      "ComparisonOperator": "GREATER_THAN",
+      "Threshold": 80.0,
+      "ThresholdType": "PERCENTAGE",
+      "NotificationState": "ALARM"
+    },
+    "Subscribers": [
+      {
+        "SubscriptionType": "EMAIL",
+        "Address": "team@university.edu"
+      }
+    ]
+  }
+]
