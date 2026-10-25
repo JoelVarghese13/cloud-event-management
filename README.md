@@ -127,42 +127,64 @@ d:/CCL Project/
 
 ## 5. Quick Start Instructions
 
-### A. Local Development (Zero Cloud Cost)
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [Git](https://git-scm.com/)
 
-1. **Start Backend**:
-   ```powershell
-   cd "d:\CCL Project\backend"
+### A. Clone the Repository
+```bash
+git clone https://github.com/JoelVarghese13/cloud-event-management.git
+cd cloud-event-management
+```
+
+### B. Local Development (Zero Cloud Setup Required)
+The project comes with a built-in mock database and fallback queue so anyone can run it locally without an AWS account or MySQL server!
+
+1. **Start the Backend API**:
+   ```bash
+   cd backend
    npm install
+   # (Optional) Copy example environment variables
+   # Windows: copy .env.example .env | Mac/Linux: cp .env.example .env
    npm start
    ```
-   The API will listen on `http://localhost:3000`.
+   The backend API will start on `http://localhost:3000`.
 
-2. **Start Frontend**:
-   ```powershell
-   cd "d:\CCL Project\frontend"
+2. **Start the Frontend Web App**:
+   Open a **new terminal window** in the project root:
+   ```bash
+   cd frontend
    npm install
+   # Windows:
+   copy .env.example .env
+   # Mac/Linux:
+   cp .env.example .env
+
    npm start
    ```
-   The UI will open on `http://localhost:3000` / `http://localhost:3001`.
+   The web application will open in your browser at `http://localhost:3001`!
+
+### C. Test Accounts Pre-loaded
+You can test immediately using these demo credentials or register a new account on the UI:
+- **Admin**: `admin@university.edu` / `admin`
+- **Organizer**: `organizer@university.edu` / `admin`
+- **Attendee**: Register freely via the Sign Up form!
 
 ---
 
-### B. Deploying to AWS (When AWS Credentials are Active)
-
-1. Refresh your temporary AWS credentials in `%USERPROFILE%\.aws\credentials`.
-2. Run the automated script:
+### D. Deploying to AWS (Cloud Infrastructure)
+When you are ready to provision the live cloud architecture:
+1. Configure your AWS credentials (`aws configure` or edit `~/.aws/credentials`).
+2. Run the automated deployment script:
    ```powershell
-   cd "d:\CCL Project\infrastructure"
+   cd infrastructure
    .\deploy-all.ps1 -Region "ap-south-1" -StudentEmail "your-email@university.edu"
    ```
 
----
-
-### C. Teardown Resources to Preserve AWS Credits
-
-Whenever you finish presenting or testing, execute:
+### E. Teardown Resources to Preserve AWS Credits
+Whenever you finish presenting or testing in the cloud:
 ```powershell
-cd "d:\CCL Project\infrastructure"
+cd infrastructure
 .\cleanup.ps1 -Region "ap-south-1"
 ```
-This terminates the EC2 instance, deletes the RDS database (skipping expensive storage snapshots), and stops all ongoing credit consumption.
+This terminates the EC2 instance, deletes the RDS database, and tears down cloud resources to ensure $0.00 cost.
