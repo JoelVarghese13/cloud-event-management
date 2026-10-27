@@ -603,3 +603,66 @@ button {
   padding: 24px;
   text-align: center;
 }
+
+/* ==========================================================================
+   Mobile Responsive Optimizations (iOS Safari, Android Chrome)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  h1 {
+    font-size: 28px !important;
+  }
+
+  h2 {
+    font-size: 22px !important;
+  }
+
+  .apple-nav-links {
+    gap: 10px;
+  }
+
+  .apple-nav-item {
+    font-size: 12px;
+    padding: 4px 2px;
+  }
+
+  .apple-pill-badge {
+    display: none;
+  }
+
+  .apple-event-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .apple-wallet-pass {
+    flex-direction: column;
+  }
+
+  .apple-wallet-stub {
+    flex: 1 1 auto;
+    width: 100%;
+    border-left: none;
+    border-top: 1px dashed var(--apple-glass-border);
+    padding: 20px;
+  }
+
+  .apple-seat-picker {
+    padding: 16px 8px;
+    overflow-x: auto;
+  }
+
+  .apple-seat-btn {
+    width: 27px;
+    height: 27px;
+    font-size: 10px;
+  }
+
+  .apple-card {
+    padding: 18px;
+  }
+}
+
