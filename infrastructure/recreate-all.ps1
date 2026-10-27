@@ -6,7 +6,7 @@
 param (
     [string]$Region = "ap-south-1",
     [string]$DbPassword = "YourSecurePassword123!",
-    [string]$StudentEmail = "admin@university.edu"
+    [string]$StudentEmail = "joelvarghese013@gmail.com"
 )
 
 Write-Host ">>> Fetching AWS Account and Existing Network Topology..." -ForegroundColor Cyan
@@ -15,7 +15,15 @@ $AccountId = $caller.Account
 Write-Host "Operating in Region: $Region, Account ID: $AccountId" -ForegroundColor Green
 
 # 1. Retrieve Existing Network
-$VpcId = (aws ec2 describe-vpcs --filters "Name=tag:Name,Values=event-mgmt-vpc" --region $Region | ConvertFrom-Json).Vpcs[0].VpcId
+try {
+    $subnetGrp = aws rds describe-db-subnet-groups --db-subnet-group-name event-mgmt-subnet-grp --region $Region 2>$null | ConvertFrom-Json
+    $VpcId = $subnetGrp.DBSubnetGroups[0].VpcId
+} catch {
+    $VpcId = $null
+}
+if (-not $VpcId) {
+    $VpcId = (aws ec2 describe-vpcs --filters "Name=tag:Name,Values=event-mgmt-vpc" --region $Region | ConvertFrom-Json).Vpcs[0].VpcId
+}
 $PublicSubnetId = (aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VpcId" "Name=tag:Name,Values=public-subnet" --region $Region | ConvertFrom-Json).Subnets[0].SubnetId
 $SgWebId = (aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$VpcId" "Name=group-name,Values=allow-web" --region $Region | ConvertFrom-Json).SecurityGroups[0].GroupId
 $SgRdsId = (aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$VpcId" "Name=group-name,Values=allow-rds" --region $Region | ConvertFrom-Json).SecurityGroups[0].GroupId

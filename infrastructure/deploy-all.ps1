@@ -7,7 +7,7 @@
 param (
     [string]$Region = "ap-south-1",
     [string]$DbPassword = "YourSecurePassword123!",
-    [string]$StudentEmail = "team@university.edu"
+    [string]$StudentEmail = "joelvarghese013@gmail.com"
 )
 
 Write-Host ">>> Verifying AWS STS Caller Identity..." -ForegroundColor Cyan

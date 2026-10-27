@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserCheck, LogIn, AlertCircle } from 'lucide-react';
+import { UserCheck, LogIn, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
 import axiosClient from '../api/axiosClient';
 
 const RegisterPage = () => {
@@ -9,10 +9,13 @@ const RegisterPage = () => {
     name: '',
     email: '',
     password: '',
-    role: 'attendee'
+    admin_passcode: ''
   });
+  const [showAdminPasscode, setShowAdminPasscode] = useState(false);
   const [error, setError] = useState(null);
+  const [successNotice, setSuccessNotice] = useState(null);
   const [loading, setLoading] = useState(false);
+  const passwordInputRef = useRef(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,152 +25,278 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setSuccessNotice(null);
     setLoading(true);
 
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
     const payload = isLogin
-      ? { email: formData.email, password: formData.password }
-      : formData;
+      ? { 
+          email: formData.email, 
+          password: formData.password, 
+          organizer_passcode: formData.admin_passcode 
+        }
+      : {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: formData.admin_passcode === 'CAMPUS2026' ? 'admin' : 'attendee',
+          organizer_passcode: formData.admin_passcode
+        };
 
     try {
       const res = await axiosClient.post(endpoint, payload);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
 
-      if (res.data.user.role === 'organizer') {
+      if (res.data.user.role === 'admin' || res.data.user.role === 'organizer') {
         navigate('/dashboard');
       } else {
         navigate('/events');
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Authentication failed. Please verify credentials.');
+      const data = err.response?.data;
+
+      // Handle duplicate email registration
+      if (!isLogin && (err.response?.status === 409 || data?.code === 'EMAIL_EXISTS')) {
+        setSuccessNotice('Account already exists with this email. Redirecting you to Sign In...');
+        setError(null);
+        setTimeout(() => {
+          setIsLogin(true);
+          setSuccessNotice(null);
+          if (passwordInputRef.current) {
+            passwordInputRef.current.focus();
+          }
+        }, 1600);
+      } else {
+        setError(data?.error || 'Authentication failed. Please verify your credentials.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 16px' }}>
-      <div className="card" style={{ maxWidth: '440px', width: '100%' }}>
-        <div style={{ display: 'flex', gap: '8px', background: 'rgba(255, 255, 255, 0.04)', padding: '4px', borderRadius: 'var(--radius-md)', marginBottom: '24px' }}>
+    <div style={{ minHeight: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
+      <div className="apple-card" style={{ maxWidth: '420px', width: '100%', position: 'relative' }}>
+        {/* Apple Segmented Toggle */}
+        <div style={{
+          display: 'flex',
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '3px',
+          borderRadius: 'var(--radius-pill)',
+          marginBottom: '26px'
+        }}>
           <button
             type="button"
-            onClick={() => { setIsLogin(false); setError(null); }}
+            onClick={() => { setIsLogin(false); setError(null); setSuccessNotice(null); }}
             style={{
               flex: 1,
-              padding: '10px',
-              borderRadius: 'var(--radius-sm)',
-              background: !isLogin ? 'var(--primary)' : 'transparent',
-              color: !isLogin ? '#fff' : 'var(--text-muted)',
-              fontWeight: '600'
+              padding: '8px',
+              borderRadius: 'var(--radius-pill)',
+              background: !isLogin ? '#ffffff' : 'transparent',
+              color: !isLogin ? '#000000' : 'var(--apple-text-secondary)',
+              fontWeight: 500,
+              fontSize: '13px',
+              transition: 'var(--apple-transition)'
             }}
           >
             Create Account
           </button>
           <button
             type="button"
-            onClick={() => { setIsLogin(true); setError(null); }}
+            onClick={() => { setIsLogin(true); setError(null); setSuccessNotice(null); }}
             style={{
               flex: 1,
-              padding: '10px',
-              borderRadius: 'var(--radius-sm)',
-              background: isLogin ? 'var(--primary)' : 'transparent',
-              color: isLogin ? '#fff' : 'var(--text-muted)',
-              fontWeight: '600'
+              padding: '8px',
+              borderRadius: 'var(--radius-pill)',
+              background: isLogin ? '#ffffff' : 'transparent',
+              color: isLogin ? '#000000' : 'var(--apple-text-secondary)',
+              fontWeight: 500,
+              fontSize: '13px',
+              transition: 'var(--apple-transition)'
             }}
           >
-            Log In
+            Sign In
           </button>
         </div>
 
-        <h2 style={{ fontSize: '1.6rem', marginBottom: '8px' }}>
-          {isLogin ? 'Welcome Back' : 'Join EventSphere'}
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '24px' }}>
-          {isLogin
-            ? 'Sign in to view your tickets and booked events.'
-            : 'Register to book tickets or manage university events.'}
-        </p>
+        <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '24px', marginBottom: '6px', letterSpacing: '-0.025em' }}>
+            {isLogin ? 'Sign In to EventSphere' : 'Create Your Pass'}
+          </h2>
+          <p style={{ color: 'var(--apple-text-secondary)', fontSize: '13px' }}>
+            {isLogin
+              ? 'Access your booked auditorium seats or enter the admin console.'
+              : 'Sign up to reserve auditorium seats and receive instant SNS passes.'}
+          </p>
+        </div>
 
+        {/* Existing Email Redirect Notification */}
+        {successNotice && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'var(--apple-green-tint)',
+            border: '1px solid rgba(48, 209, 88, 0.3)',
+            color: '#30d158',
+            padding: '10px 14px',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: '13px',
+            marginBottom: '18px'
+          }}>
+            <CheckCircle2 size={16} />
+            <span>{successNotice}</span>
+          </div>
+        )}
+
+        {/* Error Alert */}
         {error && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--danger-bg)', border: '1px solid rgba(239, 68, 68, 0.2)', color: 'var(--danger)', padding: '12px', borderRadius: 'var(--radius-md)', fontSize: '0.9rem', marginBottom: '20px' }}>
-            <AlertCircle size={18} />
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'var(--apple-red-tint)',
+            border: '1px solid rgba(255, 69, 58, 0.3)',
+            color: '#ff6961',
+            padding: '10px 14px',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: '13px',
+            marginBottom: '18px'
+          }}>
+            <AlertCircle size={16} />
             <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
           {!isLogin && (
-            <div className="form-group">
-              <label className="form-label">Full Name</label>
+            <div className="apple-form-group">
+              <label className="apple-label">Full Name</label>
               <input
                 type="text"
                 name="name"
                 required
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Jane Doe"
-                className="form-input"
+                placeholder="Joel Varghese"
+                className="apple-input"
               />
             </div>
           )}
 
-          <div className="form-group">
-            <label className="form-label">Email Address</label>
+          <div className="apple-form-group">
+            <label className="apple-label">Email Address</label>
             <input
               type="email"
               name="email"
               required
               value={formData.email}
               onChange={handleChange}
-              placeholder="jane@university.edu"
-              className="form-input"
+              placeholder="name@university.edu"
+              className="apple-input"
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Password</label>
+          <div className="apple-form-group">
+            <label className="apple-label">Password</label>
             <input
+              ref={passwordInputRef}
               type="password"
               name="password"
               required
               value={formData.password}
               onChange={handleChange}
               placeholder="••••••••"
-              className="form-input"
+              className="apple-input"
             />
           </div>
 
-          {!isLogin && (
-            <div className="form-group">
-              <label className="form-label">Account Role</label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="form-select"
+          {/* Optional Admin Passcode Section */}
+          <div style={{ marginBottom: '20px' }}>
+            {!showAdminPasscode ? (
+              <button
+                type="button"
+                onClick={() => setShowAdminPasscode(true)}
+                style={{ fontSize: '12px', color: '#0071e3', background: 'transparent', display: 'flex', alignItems: 'center', gap: '5px' }}
               >
-                <option value="attendee">Student / Attendee</option>
-                <option value="organizer">Event Organizer / Faculty</option>
-              </select>
-            </div>
-          )}
+                <Lock size={12} /> Administrator passcode? Click here
+              </button>
+            ) : (
+              <div style={{
+                background: 'rgba(0, 113, 227, 0.08)',
+                border: '1px solid rgba(0, 113, 227, 0.25)',
+                borderRadius: 'var(--radius-md)',
+                padding: '12px 14px'
+              }}>
+                <label className="apple-label" style={{ color: '#70b4ff', fontSize: '11px' }}>
+                  Admin Passcode (unlocks event management & gate tools)
+                </label>
+                <input
+                  type="password"
+                  name="admin_passcode"
+                  value={formData.admin_passcode}
+                  onChange={handleChange}
+                  placeholder="Enter passcode (e.g. CAMPUS2026)"
+                  className="apple-input"
+                  style={{ fontSize: '13px', padding: '8px 12px' }}
+                />
+                <span style={{ fontSize: '11px', color: 'var(--apple-text-tertiary)', marginTop: '4px', display: 'block' }}>
+                  Demo passcode: <strong>CAMPUS2026</strong>
+                </span>
+              </div>
+            )}
+          </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '12px', marginTop: '12px' }}
+            className="btn-apple btn-apple-primary"
+            style={{ width: '100%', padding: '12px', fontSize: '14px' }}
           >
             {loading ? 'Processing...' : (
               isLogin ? (
-                <><LogIn size={18} /> Sign In</>
+                <><LogIn size={15} /> Sign In</>
               ) : (
-                <><UserCheck size={18} /> Register Account</>
+                <><UserCheck size={15} /> Create Account</>
               )
             )}
           </button>
         </form>
+
+        {/* Demo Accounts Bar */}
+        <div style={{
+          marginTop: '24px',
+          paddingTop: '18px',
+          borderTop: '1px solid var(--apple-glass-border-subtle)',
+          fontSize: '12px',
+          color: 'var(--apple-text-tertiary)',
+          textAlign: 'center'
+        }}>
+          <div>Quick Demo Testing Accounts (Password: <code>admin</code>)</div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(true);
+                setFormData({ ...formData, email: 'admin@university.edu', password: 'admin' });
+              }}
+              style={{ background: 'var(--apple-glass)', border: '1px solid var(--apple-glass-border)', color: '#70b4ff', padding: '5px 12px', borderRadius: 'var(--radius-pill)', fontSize: '12px' }}
+            >
+              Admin Demo
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(false);
+                setFormData({ ...formData, email: 'joelvarghese013@gmail.com', name: 'Joel Varghese', password: 'admin' });
+              }}
+              style={{ background: 'var(--apple-glass)', border: '1px solid var(--apple-glass-border)', color: '#f5f5f7', padding: '5px 12px', borderRadius: 'var(--radius-pill)', fontSize: '12px' }}
+            >
+              Attendee (Joel)
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

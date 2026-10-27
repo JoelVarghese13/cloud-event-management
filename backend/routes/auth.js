@@ -8,17 +8,30 @@ const { verifyToken, JWT_SECRET } = require('../middleware/authMiddleware');
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, organizer_passcode } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email, and password are required.' });
     }
 
-    const assignedRole = role === 'organizer' ? 'organizer' : 'attendee';
+    let assignedRole = 'attendee';
+    if (role === 'organizer') {
+      if (organizer_passcode !== 'CAMPUS2026' && organizer_passcode !== 'FACULTY') {
+        return res.status(403).json({
+          error: 'Invalid Organizer Passcode. Students have Attendee access. Enter passcode CAMPUS2026 if you are authorized faculty or club head.',
+          code: 'INVALID_ORGANIZER_PASSCODE'
+        });
+      }
+      assignedRole = 'organizer';
+    }
 
     // Check existing user
     const [existing] = await query('SELECT id FROM users WHERE email = ? LIMIT 1', [email]);
     if (existing.length > 0) {
-      return res.status(409).json({ error: 'User with this email already exists.' });
+      return res.status(409).json({
+        error: 'An account with this email already exists.',
+        code: 'EMAIL_EXISTS',
+        email
+      });
     }
 
     // Hash password
@@ -67,8 +80,17 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
+    // If user provided organizer passcode on login, upgrade their role
+    let currentRole = user.role;
+    if (req.body.organizer_passcode === 'CAMPUS2026' || req.body.organizer_passcode === 'FACULTY') {
+      if (currentRole === 'attendee') {
+        await query('UPDATE users SET role = "organizer" WHERE id = ?', [user.id]);
+        currentRole = 'organizer';
+      }
+    }
+
     const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email, role: user.role },
+      { id: user.id, name: user.name, email: user.email, role: currentRole },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -76,11 +98,44 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+      user: { id: user.id, name: user.name, email: user.email, role: currentRole }
     });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Internal server error during login.' });
+  }
+});
+
+// POST /api/auth/claim-organizer - Allows authenticated attendee to unlock organizer privileges
+router.post('/claim-organizer', verifyToken, async (req, res) => {
+  try {
+    const { organizer_passcode } = req.body;
+    if (organizer_passcode !== 'CAMPUS2026' && organizer_passcode !== 'FACULTY') {
+      return res.status(403).json({
+        error: 'Invalid passcode. Enter CAMPUS2026 to unlock organizer privileges.',
+        code: 'INVALID_ORGANIZER_PASSCODE'
+      });
+    }
+
+    await query('UPDATE users SET role = "organizer" WHERE id = ?', [req.user.id]);
+
+    const updatedUser = {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      role: 'organizer'
+    };
+
+    const token = jwt.sign(updatedUser, JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      message: 'Organizer privileges unlocked! You can now publish events, manage rosters, and verify tickets.',
+      token,
+      user: updatedUser
+    });
+  } catch (err) {
+    console.error('Claim organizer error:', err);
+    res.status(500).json({ error: 'Failed to upgrade role.' });
   }
 });
 
@@ -99,3 +154,4 @@ router.get('/me', verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+

@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS events (
     capacity INT NOT NULL,
     available_tickets INT NOT NULL,
     ticket_price DECIMAL(10, 2) DEFAULT 0.00,
+    category VARCHAR(50) DEFAULT 'Tech & Cloud',
     flyer_url VARCHAR(500) NULL,
     organizer_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -42,6 +43,7 @@ CREATE TABLE IF NOT EXISTS tickets (
     attendee_name VARCHAR(100) NOT NULL,
     attendee_email VARCHAR(150) NOT NULL,
     quantity INT DEFAULT 1,
+    seats VARCHAR(255) NULL,
     status ENUM('PENDING', 'CONFIRMED', 'CANCELLED') DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
@@ -50,5 +52,5 @@ CREATE TABLE IF NOT EXISTS tickets (
 
 -- Seed Sample Data (Optional)
 INSERT IGNORE INTO users (id, name, email, password_hash, role) VALUES
-(1, 'Cloud Admin', 'admin@university.edu', '$2a$10$wT8FjU59wK.FqIqUv5P02.Z9C2B7t302f3JdG8H4Yh2z3P8FjU59w', 'admin'),
-(2, 'Event Organizer', 'organizer@university.edu', '$2a$10$wT8FjU59wK.FqIqUv5P02.Z9C2B7t302f3JdG8H4Yh2z3P8FjU59w', 'organizer');
+(1, 'Cloud Admin', 'admin@university.edu', '$2a$10$.8cpcFG/asGTj9YeMua7mOWEQ94fJPl8EtWj3l/0u7g2yHXfe79pe', 'admin'),
+(2, 'Event Organizer', 'organizer@university.edu', '$2a$10$.8cpcFG/asGTj9YeMua7mOWEQ94fJPl8EtWj3l/0u7g2yHXfe79pe', 'organizer');

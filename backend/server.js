@@ -6,6 +6,7 @@ const { initDB } = require('./db');
 const authRoutes = require('./routes/auth');
 const eventRoutes = require('./routes/events');
 const ticketRoutes = require('./routes/tickets');
+const cloudRoutes = require('./routes/cloud');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/tickets', ticketRoutes);
+app.use('/api/cloud', cloudRoutes);
 
 // Root Welcome Endpoint
 app.get('/', (req, res) => {

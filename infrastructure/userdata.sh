@@ -33,7 +33,7 @@ cd /opt/event-mgmt-api
 # Pull deployment package from S3; if not present, clone from public GitHub repository
 if aws s3 cp "s3://${FLYERS_BUCKET}/deploy/backend.zip" /tmp/backend.zip --region "$AWS_REGION" 2>/dev/null; then
   echo ">>> Extracted backend package from S3"
-  unzip -o /tmp/backend.zip -d /opt/event-mgmt-api
+  unzip -qo /tmp/backend.zip -d /opt/event-mgmt-api || true
 else
   echo ">>> Pulling backend from GitHub repository..."
   rm -rf /tmp/ccl-repo

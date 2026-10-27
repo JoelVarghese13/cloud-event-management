@@ -7,7 +7,7 @@ const { verifyToken, requireRole } = require('../middleware/authMiddleware');
 
 const region = process.env.AWS_REGION || 'ap-south-1';
 const s3 = new S3Client({ region });
-const FLYERS_BUCKET = process.env.FLYERS_BUCKET || 'event-mgmt-flyers-default';
+const FLYERS_BUCKET = process.env.FLYERS_BUCKET || 'event-mgmt-flyers-838775536247';
 
 // Multer in-memory storage for handling flyer image uploads
 const upload = multer({
@@ -15,19 +15,25 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-// GET /api/events - List all events
+// GET /api/events - List all events with search and category filters
 router.get('/', async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, category } = req.query;
     let sql = `
       SELECT e.*, u.name as organizer_name, u.email as organizer_email 
       FROM events e 
       JOIN users u ON e.organizer_id = u.id 
+      WHERE 1=1
     `;
     const params = [];
 
+    if (category && category !== 'All') {
+      sql += ` AND e.category = ?`;
+      params.push(category);
+    }
+
     if (search) {
-      sql += ` WHERE e.title LIKE ? OR e.description LIKE ? OR e.location LIKE ?`;
+      sql += ` AND (e.title LIKE ? OR e.description LIKE ? OR e.location LIKE ?)`;
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
@@ -38,6 +44,27 @@ router.get('/', async (req, res) => {
   } catch (err) {
     console.error('Fetch events error:', err);
     res.status(500).json({ error: 'Failed to retrieve events.' });
+  }
+});
+
+// GET /api/events/:id/booked-seats - List all reserved/booked seats for an event
+router.get('/:id/booked-seats', async (req, res) => {
+  try {
+    const [rows] = await query(
+      `SELECT seats FROM tickets WHERE event_id = ? AND status != 'CANCELLED' AND seats IS NOT NULL AND seats != ''`,
+      [req.params.id]
+    );
+    const bookedSeats = [];
+    for (const r of rows) {
+      if (r.seats) {
+        const parts = r.seats.split(',').map(s => s.trim().toUpperCase());
+        bookedSeats.push(...parts);
+      }
+    }
+    res.json({ bookedSeats: Array.from(new Set(bookedSeats)) });
+  } catch (err) {
+    console.error('Fetch booked seats error:', err);
+    res.status(500).json({ error: 'Failed to retrieve booked seats.' });
   }
 });
 
@@ -66,7 +93,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/events - Create new event (organizer or admin only)
 router.post('/', verifyToken, requireRole(['organizer', 'admin']), upload.single('flyer'), async (req, res) => {
   try {
-    const { title, description, date, time, location, capacity, ticket_price } = req.body;
+    const { title, description, date, time, location, capacity, ticket_price, category } = req.body;
 
     if (!title || !description || !date || !time || !location || !capacity) {
       return res.status(400).json({ error: 'Please provide all required event details.' });
@@ -100,12 +127,13 @@ router.post('/', verifyToken, requireRole(['organizer', 'admin']), upload.single
 
     const availableTickets = parseInt(capacity, 10);
     const price = parseFloat(ticket_price) || 0.00;
+    const eventCategory = category || 'Tech & Cloud';
 
     const [result] = await query(
       `INSERT INTO events 
-       (title, description, date, time, location, capacity, available_tickets, ticket_price, flyer_url, organizer_id) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [title, description, date, time, location, capacity, availableTickets, price, flyerUrl, req.user.id]
+       (title, description, date, time, location, capacity, available_tickets, ticket_price, category, flyer_url, organizer_id) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [title, description, date, time, location, capacity, availableTickets, price, eventCategory, flyerUrl, req.user.id]
     );
 
     res.status(201).json({
