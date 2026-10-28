@@ -66,12 +66,17 @@ aws ssm delete-parameter --name "/event-mgmt/db/username" --region $Region 2>$nu
 aws ssm delete-parameter --name "/event-mgmt/db/password" --region $Region 2>$null
 
 # 8. Empty & Delete S3 Buckets
-Write-Host "8. Emptying and deleting S3 Bucket..." -ForegroundColor Cyan
+Write-Host "8. Emptying and deleting S3 Buckets..." -ForegroundColor Cyan
 $caller = aws sts get-caller-identity | ConvertFrom-Json
 $accId = $caller.Account
-$bucket = "event-mgmt-flyers-$accId"
-aws s3 rm "s3://$bucket" --recursive --region $Region 2>$null
-aws s3api delete-bucket --bucket $bucket --region $Region 2>$null
+$flyersBucket = "event-mgmt-flyers-$accId"
+$siteBucket = "event-mgmt-site-$accId"
+
+aws s3 rm "s3://$flyersBucket" --recursive --region $Region 2>$null
+aws s3api delete-bucket --bucket $flyersBucket --region $Region 2>$null
+
+aws s3 rm "s3://$siteBucket" --recursive --region $Region 2>$null
+aws s3api delete-bucket --bucket $siteBucket --region $Region 2>$null
 
 # 9. Delete EC2 Key Pair
 Write-Host "9. Deleting EC2 Key Pair 'event-mgmt-key'..." -ForegroundColor Cyan

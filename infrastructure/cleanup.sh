@@ -48,5 +48,17 @@ fi
 # 6. Delete CloudWatch Alarm
 echo "Deleting CloudWatch alarms..."
 aws cloudwatch delete-alarms --alarm-names "EC2-HighCPU" --region "$REGION" || true
+aws cloudwatch delete-dashboards --dashboard-names "EventMgmtDashboard" --region "$REGION" || true
 
-echo "All active billing compute resources removed. Your AWS credits are preserved!"
+# 7. S3 Buckets & Budget
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "838775536247")
+echo "Deleting S3 buckets..."
+aws s3 rm "s3://event-mgmt-flyers-${ACCOUNT_ID}" --recursive --region "$REGION" 2>/dev/null || true
+aws s3api delete-bucket --bucket "event-mgmt-flyers-${ACCOUNT_ID}" --region "$REGION" 2>/dev/null || true
+
+aws s3 rm "s3://event-mgmt-site-${ACCOUNT_ID}" --recursive --region "$REGION" 2>/dev/null || true
+aws s3api delete-bucket --bucket "event-mgmt-site-${ACCOUNT_ID}" --region "$REGION" 2>/dev/null || true
+
+aws budgets delete-budget --account-id "$ACCOUNT_ID" --budget-name "Zero-Cost-University-Cap" 2>/dev/null || true
+
+echo "All active billing compute and storage resources removed. Your AWS credits are preserved!"
